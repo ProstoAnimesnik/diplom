@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}
+    {{ title }}
+{% endblock %}
+{% block content %}
+    <table cols="4" align="middle">
+        {% for i in goods_t %}
+            <td>
+
+                <div class="card-deck">
+                    <div class="card">
+                        <img class="card-img-top" src="{{ i.GoodsPhoto.url }}" alt='нету'/>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ i.NameGoods }}</h5>
+                            <p class ="card-text">{{ i.Price }} Рублей</p>
+                        </div>
+                        <div class="card-footer">
+                            <a href="#" class="btn btn-primary">Go somewhere</a>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        {% endfor %}
+    </table>
+{% endblock %}
+
