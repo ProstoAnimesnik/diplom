@@ -3,5 +3,33 @@
     {{ title }}
 {% endblock %}
 {% block content %}
-    <h1>Тут Просмотр заказов</h1>
+    <button type="submit" class="btn btn-success">Купить все</button>
+
+    <form method="get" enctype="multipart/form-data">
+
+        <div class="container" id="aboba">
+            <table class="table">
+                <thead class="thead-dark">
+                <tr>
+                    <th class="text-center" scope="col">#</th>
+                    <th class="text-center" scope="col">Юзернейм</th>
+                    <th class="text-center" scope="col">Название товара</th>
+                    <th class="text-center" scope="col">Цена</th>
+                </tr>
+                </thead>
+                {% for i in orders %}
+                    <tbody>
+                    <tr>
+                        <th name="goods" class="text-center" scope="row">{{ forloop.counter }}</th>
+                        <td class="text-center">{{ i.zakaz_user_id.username }}</td>
+                        <td class="text-center">{{ i.zakaz_goods_id.NameGoods }}</td>
+                        <td class="text-center">{{ i.zakaz_goods_id.Price }}</td>
+                    </tr>
+
+                    </tbody>
+                {% endfor %}
+            </table>
+        </div>
+    </form>
 {% endblock %}
+

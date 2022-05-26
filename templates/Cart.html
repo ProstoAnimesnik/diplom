@@ -3,5 +3,32 @@
     {{ title }}
 {% endblock %}
 {% block content %}
-    <h1>Корзина</h1>
+
+
+    <form method="get" enctype="multipart/form-data">
+    <button type="submit" name="btn_sdsd" class="btn btn-success">Купить все</button>
+
+        <div class="container" id="aboba">
+            <table class="table">
+                <thead class="thead-dark">
+                <tr>
+                    <th class="text-center" scope="col">#</th>
+                    <th class="text-center" scope="col">Название товара</th>
+                    <th class="text-center" scope="col">Цена</th>
+                </tr>
+                </thead>
+                {% for i in user_cart %}
+                    <tbody>
+                    <tr>
+                        <th name="goods" class="text-center" scope="row">{{ forloop.counter }}</th>
+                        <td class="text-center">{{ i.cart_goods_id.NameGoods }}</td>
+                        <td class="text-center">{{ i.cart_goods_id.Price }}</td>
+                    </tr>
+
+                    </tbody>
+                {% endfor %}
+            </table>
+        </div>
+    </form>
 {% endblock %}
+

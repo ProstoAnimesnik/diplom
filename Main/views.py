@@ -24,12 +24,22 @@ class Testing(DataMixin, ListView):
     template_name = "Shop.html"
     queryset = Goods.objects.all()
     context_object_name = "goods_t"
-    print(UserNew.objects.all())
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         c_def = self.get_user_content(title="Товары")
         return dict(list(context.items()) + list(c_def.items()))
+
+    def get(self, request, *args, **kwargs):
+        for key in request.GET.keys():
+            if key.startswith('btn_'):
+                btn_pk = key[4:]
+                tovar = Goods.objects.get(id=btn_pk) # ищем объект по id  нажатой кнопки
+
+                item_to_cart = Cart(cart_user_id=request.user, cart_goods_id=tovar) # создаем запись
+                item_to_cart.save() # добавляем
+
+        return super(Testing, self).get(request, *args, **kwargs)
 
 
 class About(DataMixin, TemplateView):
@@ -72,14 +82,34 @@ class LoginUser(DataMixin, BSModalLoginView):
     def get_success_url(self):
         return reverse_lazy('home')
 
-
-class Cart(DataMixin, TemplateView):
+#fdsfasdasd
+class CartView(DataMixin, ListView):
     template_name = "Cart.html"
+    context_object_name = "user_cart"
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         c_def = self.get_user_content(title="Корзина")
         return dict(list(context.items()) + list(c_def.items()))
+
+    # массив товаров с фильтрацией по пользователю, т.е. показываются все товары текущего пользователя
+    def get_queryset(self):
+        return Cart.objects.filter(cart_user_id=self.request.user)
+
+    def get(self, request, *args, **kwargs):
+        goods = Cart.objects.filter(cart_user_id=request.user) # список товаров в корзине у этого пользователя
+        print(goods)
+        for key in request.GET.keys():
+            if key.startswith('btn_'): # делаем грязь только по нажатию кнопки
+                for i in goods: # цикл по товарам пользователя
+                    cart_to_zakaz = Zakaz(zakaz_user_id=request.user, zakaz_goods_id=i.cart_goods_id) # Создаем объект в бд
+                    cart_to_zakaz.save() # сохраняем
+
+                this_item_cart = Cart.objects.filter(cart_user_id=request.user) # список товаров в корзине у этого пользователя
+                for j in this_item_cart:
+                    j.delete() # "очищаем" корзину
+
+        return super(CartView, self).get(request, *args, **kwargs)
 
 
 class add_goods(DataMixin, TemplateView):
@@ -91,10 +121,14 @@ class add_goods(DataMixin, TemplateView):
         return dict(list(context.items()) + list(c_def.items()))
 
 
-class view_orders(DataMixin, TemplateView):
+class view_orders(DataMixin, ListView):
     template_name = "view_orders.html"
+    context_object_name = "orders"
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         c_def = self.get_user_content(title="Добавить товар")
         return dict(list(context.items()) + list(c_def.items()))
+
+    def get_queryset(self):
+        return Zakaz.objects.all()
