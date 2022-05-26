@@ -19,6 +19,7 @@ class Index(DataMixin, TemplateView):
         return dict(list(context.items()) + list(c_def.items()))
 
 
+##запушил не хероку а он не пушится ебаный бранч говна из-за него комит не получается
 class Testing(DataMixin, ListView):
     template_name = "Shop.html"
     queryset = Goods.objects.all()
@@ -88,6 +89,7 @@ class add_goods(DataMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         c_def = self.get_user_content(title="Добавить товар")
         return dict(list(context.items()) + list(c_def.items()))
+
 
 class view_orders(DataMixin, TemplateView):
     template_name = "view_orders.html"
