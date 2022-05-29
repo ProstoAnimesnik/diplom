@@ -4,9 +4,9 @@ from bootstrap_modal_forms.mixins import PopRequestMixin, CreateUpdateAjaxMixin
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
-from django.forms import TextInput, PasswordInput, EmailInput, NumberInput
+from django.forms import TextInput, PasswordInput, EmailInput, NumberInput, ModelForm
 
-from Main.models import UserNew
+from Main.models import UserNew, Goods
 
 
 class CreateUserForm(PopRequestMixin, CreateUpdateAjaxMixin, UserCreationForm):
@@ -38,3 +38,9 @@ class LoginUserForm(AuthenticationForm):
         attrs={'class': 'form-control', 'placeholder': 'Логин', 'type': 'text', "autocomplete": "username"}))
     password = forms.CharField(label='Пароль', widget=forms.PasswordInput(
         attrs={'class': 'form-control', 'placeholder': 'Пароль', 'type': 'password'}))
+
+
+class AddGoodsForm(ModelForm):
+    class Meta:
+        model = Goods
+        fields = ("__all__")

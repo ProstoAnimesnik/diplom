@@ -1,3 +1,5 @@
+import datetime
+
 from bootstrap_modal_forms.generic import BSModalCreateView, BSModalLoginView
 from django.contrib.auth import login
 from django.http import HttpResponse
@@ -5,7 +7,7 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView, UpdateView, FormView, TemplateView
 from django.shortcuts import render, redirect
 
-from Main.forms import CreateUserForm, LoginUserForm
+from Main.forms import *
 from Main.models import *
 from Main.utils import DataMixin
 
@@ -19,7 +21,6 @@ class Index(DataMixin, TemplateView):
         return dict(list(context.items()) + list(c_def.items()))
 
 
-##запушил не хероку а он не пушится ебаный бранч говна из-за него комит не получается
 class Testing(DataMixin, ListView):
     template_name = "Shop.html"
     queryset = Goods.objects.all()
@@ -34,10 +35,10 @@ class Testing(DataMixin, ListView):
         for key in request.GET.keys():
             if key.startswith('btn_'):
                 btn_pk = key[4:]
-                tovar = Goods.objects.get(id=btn_pk) # ищем объект по id  нажатой кнопки
+                tovar = Goods.objects.get(id=btn_pk)  # ищем объект по id  нажатой кнопки
 
-                item_to_cart = Cart(cart_user_id=request.user, cart_goods_id=tovar) # создаем запись
-                item_to_cart.save() # добавляем
+                item_to_cart = Cart(cart_user_id=request.user, cart_goods_id=tovar)  # создаем запись
+                item_to_cart.save()  # добавляем
 
         return super(Testing, self).get(request, *args, **kwargs)
 
@@ -82,7 +83,9 @@ class LoginUser(DataMixin, BSModalLoginView):
     def get_success_url(self):
         return reverse_lazy('home')
 
-#fdsfasdasd
+
+# fdsfasdasd
+
 class CartView(DataMixin, ListView):
     template_name = "Cart.html"
     context_object_name = "user_cart"
@@ -97,28 +100,33 @@ class CartView(DataMixin, ListView):
         return Cart.objects.filter(cart_user_id=self.request.user)
 
     def get(self, request, *args, **kwargs):
-        goods = Cart.objects.filter(cart_user_id=request.user) # список товаров в корзине у этого пользователя
+        goods = Cart.objects.filter(cart_user_id=request.user)  # список товаров в корзине у этого пользователя
         print(goods)
         for key in request.GET.keys():
-            if key.startswith('btn_'): # делаем грязь только по нажатию кнопки
-                for i in goods: # цикл по товарам пользователя
-                    cart_to_zakaz = Zakaz(zakaz_user_id=request.user, zakaz_goods_id=i.cart_goods_id) # Создаем объект в бд
-                    cart_to_zakaz.save() # сохраняем
+            if key.startswith('btn_'):  # делаем грязь только по нажатию кнопки
+                for i in goods:# цикл по товарам пользователя
+                    cart_to_zakaz = Zakaz(zakaz_user_id=request.user,
+                                          zakaz_goods_id=i.cart_goods_id)  # Создаем объект в бд
+                    cart_to_zakaz.save()  # сохраняем
 
-                this_item_cart = Cart.objects.filter(cart_user_id=request.user) # список товаров в корзине у этого пользователя
+                this_item_cart = Cart.objects.filter(
+                    cart_user_id=request.user)  # список товаров в корзине у этого пользователя
                 for j in this_item_cart:
-                    j.delete() # "очищаем" корзину
+                    j.delete()  # "очищаем" корзину
 
         return super(CartView, self).get(request, *args, **kwargs)
 
 
-class add_goods(DataMixin, TemplateView):
+class add_goods(DataMixin, CreateView):
     template_name = "add_goods.html"
-
+    form_class = AddGoodsForm
+    success_url = reverse_lazy("add_goods")
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         c_def = self.get_user_content(title="Добавить товар")
         return dict(list(context.items()) + list(c_def.items()))
+
+
 
 
 class view_orders(DataMixin, ListView):

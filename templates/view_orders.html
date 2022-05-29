@@ -4,7 +4,7 @@
 {% endblock %}
 {% block content %}
     <button type="submit" class="btn btn-success">Купить все</button>
-
+{#ToDo как по картинке сделать таблицу#}
     <form method="get" enctype="multipart/form-data">
 
         <div class="container" id="aboba">
@@ -15,6 +15,7 @@
                     <th class="text-center" scope="col">Юзернейм</th>
                     <th class="text-center" scope="col">Название товара</th>
                     <th class="text-center" scope="col">Цена</th>
+                    <th class="text-center" scope="col">Время</th>
                 </tr>
                 </thead>
                 {% for i in orders %}
@@ -24,6 +25,7 @@
                         <td class="text-center">{{ i.zakaz_user_id.username }}</td>
                         <td class="text-center">{{ i.zakaz_goods_id.NameGoods }}</td>
                         <td class="text-center">{{ i.zakaz_goods_id.Price }}</td>
+                        <td class="text-center">{{ i.zakaz_time }}</td>
                     </tr>
 
                     </tbody>

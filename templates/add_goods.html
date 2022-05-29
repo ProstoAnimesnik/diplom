@@ -3,5 +3,9 @@
     {{ title }}
 {% endblock %}
 {% block content %}
-    <h1>Тут добавление товара</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">xui</button>
+    </form>
 {% endblock %}

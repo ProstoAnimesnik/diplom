@@ -2,27 +2,37 @@
 {% block title %}
     {{ title }}
 {% endblock %}
+{% block css %}
+    <style>
+    .card {
+        height: 50px ;
+    }
+    </style>
+{% endblock %}
+
 {% block content %}
     <form method="get" enctype="multipart/form-data">
-        <table cols="4" align="middle">
-            {% for i in goods_t %}
-                <td>
 
-                    <div class="card-deck">
-                        <div class="card">
-                            <img class="card-img-top" src="{{ i.GoodsPhoto.url }}" alt='нету'/>
-                            <div class="card-body">
-                                <h5 class="card-title">{{ i.NameGoods }}</h5>
-                                <p class="card-text">{{ i.Price }} Рублей</p>
-                            </div>
-                            <div class="card-footer">
-                                <button name="btn_{{ i.pk }}" type="submit" class="btn btn-success">Одобрить</button>
+        <div class="container-sm text-center">
+            <div class="row row-cols-md-2 g-1">
+                {% for i in goods_t %}
+                        <div class="card-columns col-md-3">
+                            <div class="card mx-sm-1 p-3 text-center">
+                                <img class="card-img-top text-center" src="{{ i.GoodsPhoto.url }}" alt='нету'/>
+                                <div class="card-body">
+                                    <h7 class="card-title">{{ i.NameGoods }}</h7>
+                                    <p class="card-text">{{ i.Price }} Рублей</p>
+                                </div>
+                                <div class="card-footer">
+                                    <button name="btn_{{ i.pk }}" type="submit" class="btn btn-success">Одобрить
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </td>
-            {% endfor %}
-        </table>
+                {% endfor %}
+            </div>
+        </div>
+
     </form>
 {% endblock %}
 
