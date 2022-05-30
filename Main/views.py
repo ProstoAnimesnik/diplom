@@ -1,7 +1,7 @@
 import datetime
 
 from bootstrap_modal_forms.generic import BSModalCreateView, BSModalLoginView
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView, UpdateView, FormView, TemplateView
@@ -104,15 +104,18 @@ class CartView(DataMixin, ListView):
         print(goods)
         for key in request.GET.keys():
             if key.startswith('btn_'):  # делаем грязь только по нажатию кнопки
-                for i in goods:# цикл по товарам пользователя
+                for i in goods:  # цикл по товарам пользователя
+                    print("Request User - ", request.user)
                     cart_to_zakaz = Zakaz(zakaz_user_id=request.user,
-                                          zakaz_goods_id=i.cart_goods_id)  # Создаем объект в бд
+                                          zakaz_goods_id=i.cart_goods_id,
+                                          zakaz_time=datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+                                          )  # Создаем объект в бд
                     cart_to_zakaz.save()  # сохраняем
 
-                this_item_cart = Cart.objects.filter(
-                    cart_user_id=request.user)  # список товаров в корзине у этого пользователя
-                for j in this_item_cart:
-                    j.delete()  # "очищаем" корзину
+            this_item_cart = Cart.objects.filter(
+                cart_user_id=request.user)  # список товаров в корзине у этого пользователя
+            for j in this_item_cart:
+                j.delete()  # "очищаем" корзину
 
         return super(CartView, self).get(request, *args, **kwargs)
 
@@ -121,12 +124,11 @@ class add_goods(DataMixin, CreateView):
     template_name = "add_goods.html"
     form_class = AddGoodsForm
     success_url = reverse_lazy("add_goods")
+
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         c_def = self.get_user_content(title="Добавить товар")
         return dict(list(context.items()) + list(c_def.items()))
-
-
 
 
 class view_orders(DataMixin, ListView):
@@ -135,8 +137,24 @@ class view_orders(DataMixin, ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        c_def = self.get_user_content(title="Добавить товар")
+        userss = UserNew.objects.all()  # - список всех пользователей
+        # поиск по всем заказам. Сначала фильтруем все записи по массиву с пользователями.
+        # Крч ищем, какие пользователи заказали.
+        # Потом, через values() вытаскиваем только время заказа и юзернейм чела.
+        # distinct() отвечает за отсутствие дубликатов
+        users_with_time = Zakaz.objects.filter(zakaz_user_id__in=userss).values('zakaz_time',
+                                                                                'zakaz_user_id__username').distinct()
+        print("users - ", users_with_time)
+
+        c_def = self.get_user_content(title="Добавить товар",
+                                      users=users_with_time
+                                      )
         return dict(list(context.items()) + list(c_def.items()))
 
     def get_queryset(self):
         return Zakaz.objects.all()
+
+
+def logout_user(request):
+    logout(request)
+    return redirect('home')

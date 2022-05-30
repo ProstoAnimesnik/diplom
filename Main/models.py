@@ -35,4 +35,5 @@ class Cart(models.Model):
 class Zakaz(models.Model):
     zakaz_user_id = models.ForeignKey(UserNew, on_delete=models.CASCADE, related_name='zakaz_user_id', blank=True, null=True)
     zakaz_goods_id = models.ForeignKey(Goods, on_delete=models.CASCADE, related_name='zakaz_goods_id', blank=True, null=True)
-    zakaz_time = models.DateTimeField(auto_now_add=True)
+    zakaz_time = models.DateTimeField("время добавление")
+

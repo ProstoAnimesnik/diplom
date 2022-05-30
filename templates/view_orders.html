@@ -4,34 +4,32 @@
 {% endblock %}
 {% block content %}
     <button type="submit" class="btn btn-success">Купить все</button>
-{#ToDo как по картинке сделать таблицу#}
-    <form method="get" enctype="multipart/form-data">
-
-        <div class="container" id="aboba">
-            <table class="table">
-                <thead class="thead-dark">
-                <tr>
-                    <th class="text-center" scope="col">#</th>
-                    <th class="text-center" scope="col">Юзернейм</th>
-                    <th class="text-center" scope="col">Название товара</th>
-                    <th class="text-center" scope="col">Цена</th>
-                    <th class="text-center" scope="col">Время</th>
-                </tr>
-                </thead>
-                {% for i in orders %}
-                    <tbody>
-                    <tr>
-                        <th name="goods" class="text-center" scope="row">{{ forloop.counter }}</th>
-                        <td class="text-center">{{ i.zakaz_user_id.username }}</td>
-                        <td class="text-center">{{ i.zakaz_goods_id.NameGoods }}</td>
-                        <td class="text-center">{{ i.zakaz_goods_id.Price }}</td>
-                        <td class="text-center">{{ i.zakaz_time }}</td>
+    {#ToDo как по картинке сделать таблицу#}
+    {% for i in users %}
+        <table cellspacing="5" cellpadding="10" border="1" width="100%">
+            <tr>
+                <td>{{ i.zakaz_user_id__username }}</td>
+                <td>{{ i.zakaz_time }}</td>
+                <td>номер теле</td>
+                <td>
+                    <button data-bs-toggle="collapse" data-bs-target="#boobs_{{ i.zakaz_user_id__username }}{{ i.zakaz_time.day }}{{ i.zakaz_time.hour }}{{ i.zakaz_time.minute }}">
+                        Collapsible
+                    </button>
+                </td>
+                <td>Кнопачка для одобрения</td>
+                <td>Кнопачка для отклонения</td>
+            </tr>
+            {% for o in orders %}
+                {% if o.zakaz_user_id.username == i.zakaz_user_id__username and o.zakaz_time == i.zakaz_time %}
+                    <tr id="boobs_{{ i.zakaz_user_id__username }}{{ i.zakaz_time.day }}{{ i.zakaz_time.hour }}{{ i.zakaz_time.minute }}" class="collapse">
+                        <td>Имя - {{ o.zakaz_goods_id.NameGoods }}</td>
+                        <td>Цена - {{ o.zakaz_goods_id.Price }}</td>
+                        <td>Хуйня - {{ o.zakaz_goods_id.GoodsStock }}</td>
+                        <td>Тип - {{ o.zakaz_goods_id.GoodsType }}</td>
                     </tr>
+                {% endif %}
+            {% endfor %}
 
-                    </tbody>
-                {% endfor %}
-            </table>
-        </div>
-    </form>
+        </table>
+    {% endfor %}
 {% endblock %}
-
