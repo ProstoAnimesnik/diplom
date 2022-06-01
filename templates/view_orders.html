@@ -1,4 +1,6 @@
 {% extends 'base.html' %}
+
+{% load mathfilters %}
 {% block title %}
     {{ title }}
 {% endblock %}
@@ -33,15 +35,22 @@
                             Collapsible
                         </button>
                     </td>
-                    <td><button id="del_z" name="btn_" type="button" class="bb tn btn btn-success">Одобрение заявки</button></td>
-                    <td><button id="del_z" name="btn_" type="button" class="bb tn btn-danger ">Отклонение</button></td>
+                    <td><button type="submit" name="btn_accept" class="btn btn-success">Купить все</button></td>
+                    <td><button id="del_z" name="btn_decine" type="button" class="bb tn btn-danger ">Отклонение</button></td>
                 </tr>
                 {% for o in orders %}
                     {% if o.zakaz_user_id.username == i.zakaz_user_id__username and o.zakaz_time == i.zakaz_time %}
                         <tr id="boobs_{{ i.zakaz_user_id__username }}{{ i.zakaz_time.day }}{{ i.zakaz_time.hour }}{{ i.zakaz_time.minute }}"class="collapse">
                             <td>Имя - {{ o.zakaz_goods_id.NameGoods }}</td>
+                            <td>Кол-во - {{ o.zakaz_goods_count }}</td>
                             <td>Цена - {{ o.zakaz_goods_id.Price }}</td>
-                            <td>Хуйня - {{ o.zakaz_goods_id.GoodsStock }}</td>
+                            <td>Цена общая - {{ o.zakaz_goods_count|mul:o.zakaz_goods_id.Price }} </td>
+                            <td>{% if o.zakaz_goods_count <= o.zakaz_goods_id.GoodsStock  %}
+                                <i class="fa fa-check"></i>
+                                {% else %}
+                                <i class="fa fa-xmark"></i>
+                                {% endif %}
+                            </td>
                             <td>Тип - {{ o.zakaz_goods_id.GoodsType }}</td>
                         </tr>
                     {% endif %}

@@ -119,8 +119,8 @@ class CartView(DataMixin, ListView):
                     print("Request User - ", request.user)
                     cart_to_zakaz = Zakaz(zakaz_user_id=request.user,
                                           zakaz_goods_id=i.cart_goods_id,
-                                          zakaz_time=datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-                                          )  # Создаем объект в бд
+                                          zakaz_time=datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
+                                          zakaz_goods_count=i.cart_goods_count)  # Создаем объект в бд
                     cart_to_zakaz.save()  # сохраняем
             this_item_cart = Cart.objects.filter(
                 cart_user_id=request.user)  # список товаров в корзине у этого пользователя
@@ -156,20 +156,28 @@ class view_orders(DataMixin, ListView):
             'zakaz_time',
             'zakaz_user_id__username',
             'zakaz_user_id__NumPhone',
-            "zakaz_status").distinct()
+            "zakaz_status",
+            ).distinct()
         users_with_time_rasmortenno = Zakaz.objects.filter(zakaz_user_id__in=userss,
                                                            zakaz_status__in=["2", "3"]).values(
             'zakaz_time',
             'zakaz_user_id__username',
             'zakaz_user_id__NumPhone',
-            "zakaz_status").distinct()
-        print("users - ", users_with_time_ne_rasmort)
-        print("users_with_time_rasmortenno - ", users_with_time_rasmortenno)
-        c_def = self.get_user_content(title="Добавить товар",
-                                      users=users_with_time_ne_rasmort,
-                                      users_with_time_rasmortenno=users_with_time_rasmortenno
-                                      )
-        return dict(list(context.items()) + list(c_def.items()))
+            "zakaz_status",
+
+        ).distinct()
+
+    def get(self, request, *args, **kwargs):
+        for key in request.GET.keys():
+            if key.startswith('btn_accept'):
+            if key.startswith('btn_decine'):
+
+
+    c_def = self.get_user_content(title="Добавить товар",
+                                  users=users_with_time_ne_rasmort,
+                                  users_with_time_rasmortenno=users_with_time_rasmortenno
+                                  )
+    return dict(list(context.items()) + list(c_def.items()))
 
     def get_queryset(self):
         return Zakaz.objects.all()

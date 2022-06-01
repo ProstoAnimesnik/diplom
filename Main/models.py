@@ -44,3 +44,4 @@ class Zakaz(models.Model):
                                        null=True)
     zakaz_time = models.DateTimeField("время добавление")
     zakaz_status = models.CharField(max_length=300, choices=TypeZakaz, blank=True, null=True, default='1')
+    zakaz_goods_count = models.IntegerField("Кол-во", blank=True, null=True)

@@ -1,1 +1,3 @@
 venv\pyvenv.cfg
+__pychache__/
+*.pyc
