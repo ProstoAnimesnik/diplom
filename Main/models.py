@@ -29,7 +29,7 @@ class Goods(models.Model):
 class Cart(models.Model):
     cart_user_id = models.ForeignKey(UserNew, on_delete=models.CASCADE, related_name='cart_user_id')
     cart_goods_id = models.ForeignKey(Goods, on_delete=models.CASCADE, related_name='cart_goods_id')
-    cart_goods_count = models.DecimalField(max_digits=5, decimal_places=0, blank=True, null=True)
+    cart_goods_count = models.IntegerField("Кол-во", blank=True, null=True)
 
 
 class Zakaz(models.Model):

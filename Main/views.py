@@ -2,10 +2,9 @@ import datetime
 
 from bootstrap_modal_forms.generic import BSModalCreateView, BSModalLoginView
 from django.contrib.auth import login, logout
-from django.http import HttpResponse
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, ListView, UpdateView, FormView, TemplateView
-from django.shortcuts import render, redirect
+from django.views.generic import CreateView, ListView, TemplateView
 
 from Main.forms import *
 from Main.models import *
@@ -39,12 +38,17 @@ class Testing(DataMixin, ListView):
                 cou = 0
                 for i in Cart.objects.filter(cart_user_id=request.user):
                     if tovar == i.cart_goods_id:
-                        towa = Cart.objects.get(cart_user_id=request.user, cart_goods_id=i)
+                        print("I - ", tovar)
+                        towa = Cart.objects.get(cart_user_id=request.user, cart_goods_id=tovar)
+                        print(type(towa.cart_user_id))
+                        print(type(towa.cart_goods_count))
+
                         towa.cart_goods_count += 1
                         towa.save()
+                        print(towa)
                         cou = 1
                 if cou == 0:
-                    item_to_cart = Cart(cart_user_id=request.user, cart_goods_id=tovar)  # создаем запись
+                    item_to_cart = Cart(cart_user_id=request.user, cart_goods_id=tovar, cart_goods_count=1)  # создаем запись
                     item_to_cart.save()  # добавляем
 
         return super(Testing, self).get(request, *args, **kwargs)
@@ -115,7 +119,6 @@ class CartView(DataMixin, ListView):
                     print("Request User - ", request.user)
                     cart_to_zakaz = Zakaz(zakaz_user_id=request.user,
                                           zakaz_goods_id=i.cart_goods_id,
-                                          zakaz_count=i.cart_goods_count,
                                           zakaz_time=datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
                                           )  # Создаем объект в бд
                     cart_to_zakaz.save()  # сохраняем
@@ -154,7 +157,8 @@ class view_orders(DataMixin, ListView):
             'zakaz_user_id__username',
             'zakaz_user_id__NumPhone',
             "zakaz_status").distinct()
-        users_with_time_rasmortenno = Zakaz.objects.filter(zakaz_user_id__in=userss,zakaz_status__in=["2", "3"]).values(
+        users_with_time_rasmortenno = Zakaz.objects.filter(zakaz_user_id__in=userss,
+                                                           zakaz_status__in=["2", "3"]).values(
             'zakaz_time',
             'zakaz_user_id__username',
             'zakaz_user_id__NumPhone',

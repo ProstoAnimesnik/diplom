@@ -24,9 +24,9 @@
                     <tr>
                         <th name="goods" class="text-center" scope="row">{{ forloop.counter }}</th>
                         <td class="text-center">{{ i.cart_goods_id.NameGoods }}</td>
-                        <td class="text-center">{{ i.zakaz_count }}</td>
+                        <td class="text-center">{{ i.cart_goods_count }}</td>
                         <td class="text-center">{{ i.cart_goods_id.Price }}</td>
-                        <td class="text-center">{{ i.cart_goods_id.Price|mul:i.zakaz_count }}</td>
+                        <td class="text-center">{{ i.cart_goods_id.Price|mul:i.cart_goods_count }}</td>
                     </tr>
 
                     </tbody>
