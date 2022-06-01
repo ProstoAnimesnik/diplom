@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'Main.apps.MainConfig',
     'bootstrap_modal_forms',
     'widget_tweaks',
+    "mathfilters",
 ]
 
 MIDDLEWARE = [

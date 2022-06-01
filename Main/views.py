@@ -36,9 +36,16 @@ class Testing(DataMixin, ListView):
             if key.startswith('btn_'):
                 btn_pk = key[4:]
                 tovar = Goods.objects.get(id=btn_pk)  # ищем объект по id  нажатой кнопки
-
-                item_to_cart = Cart(cart_user_id=request.user, cart_goods_id=tovar)  # создаем запись
-                item_to_cart.save()  # добавляем
+                cou = 0
+                for i in Cart.objects.filter(cart_user_id=request.user):
+                    if tovar == i.cart_goods_id:
+                        towa = Cart.objects.get(cart_user_id=request.user, cart_goods_id=i)
+                        towa.cart_goods_count += 1
+                        towa.save()
+                        cou = 1
+                if cou == 0:
+                    item_to_cart = Cart(cart_user_id=request.user, cart_goods_id=tovar)  # создаем запись
+                    item_to_cart.save()  # добавляем
 
         return super(Testing, self).get(request, *args, **kwargs)
 
@@ -108,10 +115,10 @@ class CartView(DataMixin, ListView):
                     print("Request User - ", request.user)
                     cart_to_zakaz = Zakaz(zakaz_user_id=request.user,
                                           zakaz_goods_id=i.cart_goods_id,
+                                          zakaz_count=i.cart_goods_count,
                                           zakaz_time=datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
                                           )  # Создаем объект в бд
                     cart_to_zakaz.save()  # сохраняем
-
             this_item_cart = Cart.objects.filter(
                 cart_user_id=request.user)  # список товаров в корзине у этого пользователя
             for j in this_item_cart:
@@ -142,12 +149,21 @@ class view_orders(DataMixin, ListView):
         # Крч ищем, какие пользователи заказали.
         # Потом, через values() вытаскиваем только время заказа и юзернейм чела.
         # distinct() отвечает за отсутствие дубликатов
-        users_with_time = Zakaz.objects.filter(zakaz_user_id__in=userss).values('zakaz_time',
-                                                                                'zakaz_user_id__username').distinct()
-        print("users - ", users_with_time)
-
+        users_with_time_ne_rasmort = Zakaz.objects.filter(zakaz_user_id__in=userss, zakaz_status="1").values(
+            'zakaz_time',
+            'zakaz_user_id__username',
+            'zakaz_user_id__NumPhone',
+            "zakaz_status").distinct()
+        users_with_time_rasmortenno = Zakaz.objects.filter(zakaz_user_id__in=userss,zakaz_status__in=["2", "3"]).values(
+            'zakaz_time',
+            'zakaz_user_id__username',
+            'zakaz_user_id__NumPhone',
+            "zakaz_status").distinct()
+        print("users - ", users_with_time_ne_rasmort)
+        print("users_with_time_rasmortenno - ", users_with_time_rasmortenno)
         c_def = self.get_user_content(title="Добавить товар",
-                                      users=users_with_time
+                                      users=users_with_time_ne_rasmort,
+                                      users_with_time_rasmortenno=users_with_time_rasmortenno
                                       )
         return dict(list(context.items()) + list(c_def.items()))
 

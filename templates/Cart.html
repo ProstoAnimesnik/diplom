@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
+{% load mathfilters %}
 {% block title %}
     {{ title }}
 {% endblock %}
 {% block content %}
-
 
     <form method="get" enctype="multipart/form-data">
     <button type="submit" name="btn_sdsd" class="btn btn-success">Купить все</button>
@@ -14,7 +14,9 @@
                 <tr>
                     <th class="text-center" scope="col">#</th>
                     <th class="text-center" scope="col">Название товара</th>
-                    <th class="text-center" scope="col">Цена</th>
+                    <th class="text-center" scope="col">Кол-во</th>
+                    <th class="text-center" scope="col">Цена за ед.Товара</th>
+                    <th class="text-center" scope="col">Цена за ед.товара*кол-во</th>
                 </tr>
                 </thead>
                 {% for i in user_cart %}
@@ -22,7 +24,9 @@
                     <tr>
                         <th name="goods" class="text-center" scope="row">{{ forloop.counter }}</th>
                         <td class="text-center">{{ i.cart_goods_id.NameGoods }}</td>
+                        <td class="text-center">{{ i.zakaz_count }}</td>
                         <td class="text-center">{{ i.cart_goods_id.Price }}</td>
+                        <td class="text-center">{{ i.cart_goods_id.Price|mul:i.zakaz_count }}</td>
                     </tr>
 
                     </tbody>
