@@ -167,17 +167,17 @@ class view_orders(DataMixin, ListView):
 
         ).distinct()
 
-    def get(self, request, *args, **kwargs):
-        for key in request.GET.keys():
-            if key.startswith('btn_accept'):
-            if key.startswith('btn_decine'):
+    #def get(self, request, *args, **kwargs):
+    #    for key in request.GET.keys():
+    #         if key.startswith('btn_accept'):
+            # if key.startswith('btn_decine'):
 
 
-    c_def = self.get_user_content(title="Добавить товар",
-                                  users=users_with_time_ne_rasmort,
-                                  users_with_time_rasmortenno=users_with_time_rasmortenno
-                                  )
-    return dict(list(context.items()) + list(c_def.items()))
+        c_def = self.get_user_content(title="Добавить товар",
+                                      users=users_with_time_ne_rasmort,
+                                      users_with_time_rasmortenno=users_with_time_rasmortenno
+                                     )
+        return dict(list(context.items()) + list(c_def.items()))
 
     def get_queryset(self):
         return Zakaz.objects.all()
