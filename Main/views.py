@@ -186,3 +186,9 @@ class view_orders(DataMixin, ListView):
 def logout_user(request):
     logout(request)
     return redirect('home')
+
+#ToDo шоб задеплоить на кероку
+#git add .
+#git commit -am "Название комита"
+#git push heroku master
+#gi
