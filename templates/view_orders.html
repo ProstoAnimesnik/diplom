@@ -14,6 +14,7 @@
                type="button" role="tab" aria-controls="profile" aria-selected="false">Обработанные</a>
         </li>
     </ul>
+    <div class="tab-content">
     <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
 
         {% for i in users_ne_rasmortenno %}
@@ -29,7 +30,7 @@
                                 Просмотр заказа
                             </button>
                         </td>
-                        <form method="post" action="view_orders"   >
+                        <form method="post" action="view_orders">
                         <td>    <button type="submit" name="submit" value="{{ i.zakaz_time|date:"c" }}_{{ i.zakaz_user_id__username}}_submit">кнопачка одобрить</button></td>
                         <td>    <button type="submit" name="decline" value="{{ i.zakaz_time|date:"c" }}_{{ i.zakaz_user_id__username}}_decline">кнопачка -</button></td>
                         {% csrf_token %}
@@ -64,9 +65,9 @@
                         <td>{{ i.zakaz_time }}</td>
                         <td>{{ i.zakaz_user_id__NumPhone }}</td>
                     {% if i.zakaz_status == "2" %}
-                        <td> Рассмотренна </td>
+                        <td> Отклонено </td>
                     {% elif i.zakaz_status == "3" %}
-                        <td> Отказано </td>
+                        <td> Одобренно </td>
                     {% endif %}
                         <td>
                             <button data-bs-toggle="collapse" data-bs-target="#boobs_{{ i.zakaz_user_id__username }}{{ i.zakaz_time.day }}{{ i.zakaz_time.hour }}{{ i.zakaz_time.minute }}">
@@ -90,6 +91,6 @@
                 </table>
         {% endfor %}
     </div>
-
+</div>
 
 {% endblock %}

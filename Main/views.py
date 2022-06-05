@@ -161,7 +161,6 @@ class view_orders(DataMixin, ListView,View ):
             'zakaz_user_id__username',
             'zakaz_user_id__NumPhone',
             "zakaz_status",
-            "id"
         ).distinct()
         users_with_time_rasmortenno = Zakaz.objects.filter(zakaz_user_id__in=userss,
                                                            zakaz_status__in=["2", "3"]).values(
@@ -169,9 +168,9 @@ class view_orders(DataMixin, ListView,View ):
             'zakaz_user_id__username',
             'zakaz_user_id__NumPhone',
             "zakaz_status",
-            "id"
 
         ).distinct()
+        print("users_with_time_ne_rasmort - ", users_with_time_ne_rasmort)
         c_def = self.get_user_content(title="Добавить товар",
                                       users_ne_rasmortenno=users_with_time_ne_rasmort,
                                       users_rasmortenno=users_with_time_rasmortenno
@@ -186,22 +185,26 @@ class view_orders(DataMixin, ListView,View ):
             if request.POST.get("submit"):
                 print("submit")
                 kek = request.POST.get('submit').split("_")
-                print(kek[0])
-                print(kek[1])
                 kek_1 = Zakaz.objects.filter(zakaz_time=kek[0])
-                print(kek_1)
+                print(f"kek_1 - {kek_1}")
+                for i in kek_1:
+                    print(f"i - {i}")
+                    print(f"i.status - {i.zakaz_status}")
+                    i.zakaz_status = "3"
+                    i.save()
+                    print(f"i.status2 - {i.zakaz_status}")
+
+
             elif request.POST.get("decline"):
                 kek = request.POST.get('decline').split("_")
-                print(kek)
-                print(kek[0])
-                print(kek[1])
-                print(kek[2])
-                print(type(kek[0]))
-                kek_1=Zakaz.objects.filter(zakaz_status="1")
-                print(kek_1)
-                print(kek_1[0])
-                print(kek_1[0].zakaz_time)
-                print(type(kek_1[0].zakaz_time))
+                kek_1 = Zakaz.objects.filter(zakaz_time=kek[0])
+                print(f"kek_1 - {kek_1}")
+                for i in kek_1:
+                    print(f"i - {i}")
+                    print(f"i.status - {i.zakaz_status}")
+                    i.zakaz_status = "2"
+                    i.save()
+                    print(f"i.status2 - {i.zakaz_status}")
             # if key.startswith('submit_'):
             #     btn_pk = key[7:].split("_")
             #     print("submit")
