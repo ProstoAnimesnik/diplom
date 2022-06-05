@@ -2,9 +2,13 @@ import datetime
 
 from bootstrap_modal_forms.generic import BSModalCreateView, BSModalLoginView
 from django.contrib.auth import login, logout
-from django.shortcuts import redirect
+from django.http import *
+from django.shortcuts import redirect , render
+from django.template.smartif import key
 from django.urls import reverse_lazy
+from django.utils.timezone import make_aware
 from django.views.generic import CreateView, ListView, TemplateView
+from django.views.generic.base import View
 
 from Main.forms import *
 from Main.models import *
@@ -48,7 +52,8 @@ class Testing(DataMixin, ListView):
                         print(towa)
                         cou = 1
                 if cou == 0:
-                    item_to_cart = Cart(cart_user_id=request.user, cart_goods_id=tovar, cart_goods_count=1)  # создаем запись
+                    item_to_cart = Cart(cart_user_id=request.user, cart_goods_id=tovar,
+                                        cart_goods_count=1)  # создаем запись
                     item_to_cart.save()  # добавляем
 
         return super(Testing, self).get(request, *args, **kwargs)
@@ -140,8 +145,7 @@ class add_goods(DataMixin, CreateView):
         c_def = self.get_user_content(title="Добавить товар")
         return dict(list(context.items()) + list(c_def.items()))
 
-
-class view_orders(DataMixin, ListView):
+class view_orders(DataMixin, ListView,View ):
     template_name = "view_orders.html"
     context_object_name = "orders"
 
@@ -157,38 +161,69 @@ class view_orders(DataMixin, ListView):
             'zakaz_user_id__username',
             'zakaz_user_id__NumPhone',
             "zakaz_status",
-            ).distinct()
+            "id"
+        ).distinct()
         users_with_time_rasmortenno = Zakaz.objects.filter(zakaz_user_id__in=userss,
                                                            zakaz_status__in=["2", "3"]).values(
             'zakaz_time',
             'zakaz_user_id__username',
             'zakaz_user_id__NumPhone',
             "zakaz_status",
+            "id"
 
         ).distinct()
-
-    #def get(self, request, *args, **kwargs):
-    #    for key in request.GET.keys():
-    #         if key.startswith('btn_accept'):
-            # if key.startswith('btn_decine'):
-
-
         c_def = self.get_user_content(title="Добавить товар",
-                                      users=users_with_time_ne_rasmort,
-                                      users_with_time_rasmortenno=users_with_time_rasmortenno
-                                     )
+                                      users_ne_rasmortenno=users_with_time_ne_rasmort,
+                                      users_rasmortenno=users_with_time_rasmortenno
+                                      )
         return dict(list(context.items()) + list(c_def.items()))
 
     def get_queryset(self):
         return Zakaz.objects.all()
+
+    def post(self, request):
+        if request.method == 'POST':
+            if request.POST.get("submit"):
+                print("submit")
+                kek = request.POST.get('submit').split("_")
+                print(kek[0])
+                print(kek[1])
+                kek_1 = Zakaz.objects.filter(zakaz_time=kek[0])
+                print(kek_1)
+            elif request.POST.get("decline"):
+                kek = request.POST.get('decline').split("_")
+                print(kek)
+                print(kek[0])
+                print(kek[1])
+                print(kek[2])
+                print(type(kek[0]))
+                kek_1=Zakaz.objects.filter(zakaz_status="1")
+                print(kek_1)
+                print(kek_1[0])
+                print(kek_1[0].zakaz_time)
+                print(type(kek_1[0].zakaz_time))
+            # if key.startswith('submit_'):
+            #     btn_pk = key[7:].split("_")
+            #     print("submit")
+            #     print(Zakaz.objects.filter(zakaz_time=datetime.datetime.strptime(btn_pk[0], "%Y-%m-%d %H:%M")))
+            #
+            #     # zayavka_id = Zakaz.objects.get(id=btn_pk)
+            # elif key.startswith('decline_'):
+            #     btn_pk = key[8:].split("_")
+            #     print("decline")
+            #     # print(Zakaz.objects.filter(zakaz_time=datetime.datetime.strptime(btn_pk[0], "%Y-%m-%d %H:%M")))
+        return HttpResponseRedirect('/view_orders')
+
+
+
 
 
 def logout_user(request):
     logout(request)
     return redirect('home')
 
-#ToDo шоб задеплоить на кероку
-#git add .
-#git commit -am "Название комита"
-#git push heroku master
-#gi
+# ToDo шоб задеплоить на кероку
+# git add .
+# git commit -am "Название комита"
+# git push heroku master
+# gi

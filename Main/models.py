@@ -36,7 +36,7 @@ class Zakaz(models.Model):
     TypeZakaz = (
         ("1", "На расмотрении"),
         ("2", "Отклонено"),
-        ("3", "Закрыт"),
+        ("3", "Одобренно"),
     )
     zakaz_user_id = models.ForeignKey(UserNew, on_delete=models.CASCADE, related_name='zakaz_user_id', blank=True,
                                       null=True)

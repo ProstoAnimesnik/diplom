@@ -39,7 +39,6 @@ class LoginUserForm(AuthenticationForm):
     password = forms.CharField(label='Пароль', widget=forms.PasswordInput(
         attrs={'class': 'form-control', 'placeholder': 'Пароль', 'type': 'password'}))
 
-
 class AddGoodsForm(ModelForm):
     class Meta:
         model = Goods

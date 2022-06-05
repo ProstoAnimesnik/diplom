@@ -1,11 +1,10 @@
 {% extends 'base.html' %}
-
 {% load mathfilters %}
 {% block title %}
     {{ title }}
 {% endblock %}
 {% block content %}
-    <ul class="nav nav-pills nav-fill" id="myTab" role="tablist">
+     <ul class="nav nav-pills nav-fill" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
             <a class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home"
                type="button" role="tab" aria-controls="home" aria-selected="true">В процессе</a>
@@ -15,87 +14,82 @@
                type="button" role="tab" aria-controls="profile" aria-selected="false">Обработанные</a>
         </li>
     </ul>
-    <div class="tab-content">
-        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-        {% for i in users %}
-            <table cellspacing="5" cellpadding="10" border="1" width="100%">
-                <tr>
-                    <td>{{ i.zakaz_user_id__username }}</td>
-                    <td>{{ i.zakaz_time }}</td>
-                    <td>{{ i.zakaz_user_id__NumPhone }}</td>
-                        {% if i.zakaz_status == "1" %}
-                    <td> Не рассмотренна</td>
-                {% elif i.zakaz_status == "2" %}
-                    <td> Рассмотренна </td>
-                {% elif i.zakaz_status == "3" %}
-                    <td> Отказано </td>
-                {% endif %}
-                    <td>
-                        <button data-bs-toggle="collapse" data-bs-target="#boobs_{{ i.zakaz_user_id__username }}{{ i.zakaz_time.day }}{{ i.zakaz_time.hour }}{{ i.zakaz_time.minute }}">
-                            Collapsible
-                        </button>
-                    </td>
-                    <td><button type="submit" name="btn_accept" class="btn btn-success">Купить все</button></td>
-                    <td><button id="del_z" name="btn_decine" type="button" class="bb tn btn-danger ">Отклонение</button></td>
-                </tr>
-                {% for o in orders %}
-                    {% if o.zakaz_user_id.username == i.zakaz_user_id__username and o.zakaz_time == i.zakaz_time %}
-                        <tr id="boobs_{{ i.zakaz_user_id__username }}{{ i.zakaz_time.day }}{{ i.zakaz_time.hour }}{{ i.zakaz_time.minute }}"class="collapse">
-                            <td>Имя - {{ o.zakaz_goods_id.NameGoods }}</td>
-                            <td>Кол-во - {{ o.zakaz_goods_count }}</td>
-                            <td>Цена - {{ o.zakaz_goods_id.Price }}</td>
-                            <td>Цена общая - {{ o.zakaz_goods_count|mul:o.zakaz_goods_id.Price }} </td>
-                            <td>{% if o.zakaz_goods_count <= o.zakaz_goods_id.GoodsStock  %}
-                                <i class="fa fa-check"></i>
-                                {% else %}
-                                <i class="fa fa-xmark"></i>
-                                {% endif %}
-                            </td>
-                            <td>Тип - {{ o.zakaz_goods_id.GoodsType }}</td>
-                        </tr>
-                    {% endif %}
-                {% endfor %}
+    <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
 
-            </table>
+        {% for i in users_ne_rasmortenno %}
+                <table cellspacing="5" cellpadding="10" border="1" width="100%">
+                    <tr>
+
+                        <td> {{ i.zakaz_user_id__username}} </td>
+                        <td> Не расмотренно </td>
+                        <td>{{ i.zakaz_time }}</td>
+                        <td>{{ i.zakaz_user_id__NumPhone }}</td>
+                        <td>
+                            <button data-bs-toggle="collapse" data-bs-target="#boobs_{{ i.zakaz_user_id__username }}{{ i.zakaz_time.day }}{{ i.zakaz_time.hour }}{{ i.zakaz_time.minute }}">
+                                Просмотр заказа
+                            </button>
+                        </td>
+                        <form method="post" action="view_orders"   >
+                        <td>    <button type="submit" name="submit" value="{{ i.zakaz_time|date:"c" }}_{{ i.zakaz_user_id__username}}_submit">кнопачка одобрить</button></td>
+                        <td>    <button type="submit" name="decline" value="{{ i.zakaz_time|date:"c" }}_{{ i.zakaz_user_id__username}}_decline">кнопачка -</button></td>
+                        {% csrf_token %}
+                        </form>
+                    </tr>
+                    {% for o in orders %}
+                        {% if o.zakaz_user_id.username == i.zakaz_user_id__username and o.zakaz_time == i.zakaz_time %}
+                            <tr id="boobs_{{ i.zakaz_user_id__username }}{{ i.zakaz_time.day }}{{ i.zakaz_time.hour }}{{ i.zakaz_time.minute }}"class="collapse">
+                                <td>Имя - {{ o.zakaz_goods_id.NameGoods }}</td>
+                                <td>Кол-во - {{ o.zakaz_goods_count }}</td>
+                                <td>Цена - {{ o.zakaz_goods_id.Price }}</td>
+                                <td>Цена общая - {{ o.zakaz_goods_count|mul:o.zakaz_goods_id.Price }} </td>
+                                <td>{% if o.zakaz_goods_count <= o.zakaz_goods_id.GoodsStock  %}
+                                    <i class="fa fa-check"></i>
+                                    {% else %}
+                                    <i class="fa fa-xmark"></i>
+                                    {% endif %}
+                                </td>
+                                <td>Тип - {{ o.zakaz_goods_id.GoodsType }}</td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                </table>
         {% endfor %}
     </div>
 
     <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-    {% for i in users_with_time_rasmortenno %}
-        <table cellspacing="5" cellpadding="10" border="1" width="100%">
-            <tr>
-                <td>{{ i.zakaz_user_id__username }}</td>
-                <td>{{ i.zakaz_time }}</td>
-                <td>{{ i.zakaz_user_id__NumPhone }}</td>
-                    {% if i.zakaz_status == "1" %}
-                <td> Не рассмотренна</td>
-            {% elif i.zakaz_status == "2" %}
-                <td> Рассмотренна </td>
-            {% elif i.zakaz_status == "3" %}
-                <td> Отказано </td>
-            {% endif %}
-                <td>
-                    <button data-bs-toggle="collapse" data-bs-target="#boobs_{{ i.zakaz_user_id__username }}{{ i.zakaz_time.day }}{{ i.zakaz_time.hour }}{{ i.zakaz_time.minute }}">
-                        Collapsible
-                    </button>
-                </td>
-                <td>Кнопачка для одобрения</td>
-                <td>Кнопачка для отклонения</td>
-            </tr>
-            {% for o in orders %}
-                {% if o.zakaz_user_id.username == i.zakaz_user_id__username and o.zakaz_time == i.zakaz_time %}
-                    <tr id="boobs_{{ i.zakaz_user_id__username }}{{ i.zakaz_time.day }}{{ i.zakaz_time.hour }}{{ i.zakaz_time.minute }}"class="collapse">
-                        <td>Имя - {{ o.zakaz_goods_id.NameGoods }}</td>
-                        <td>Цена - {{ o.zakaz_goods_id.Price }}</td>
-                        <td>Хуйня - {{ o.zakaz_goods_id.GoodsStock }}</td>
-                        <td>Тип - {{ o.zakaz_goods_id.GoodsType }}</td>
+        {% for i in users_rasmortenno %}
+                <table cellspacing="5" cellpadding="10" border="1" width="100%">
+                    <tr>
+                        <td>{{ i.zakaz_user_id__username }}</td>
+                        <td>{{ i.zakaz_time }}</td>
+                        <td>{{ i.zakaz_user_id__NumPhone }}</td>
+                    {% if i.zakaz_status == "2" %}
+                        <td> Рассмотренна </td>
+                    {% elif i.zakaz_status == "3" %}
+                        <td> Отказано </td>
+                    {% endif %}
+                        <td>
+                            <button data-bs-toggle="collapse" data-bs-target="#boobs_{{ i.zakaz_user_id__username }}{{ i.zakaz_time.day }}{{ i.zakaz_time.hour }}{{ i.zakaz_time.minute }}">
+                                Collapsible
+                            </button>
+                        </td>
+                        <td>Кнопачка для одобрения</td>
+                        <td>Кнопачка для отклонения</td>
                     </tr>
-                {% endif %}
-            {% endfor %}
+                    {% for o in orders %}
+                        {% if o.zakaz_user_id.username == i.zakaz_user_id__username and o.zakaz_time == i.zakaz_time %}
+                            <tr id="boobs_{{ i.zakaz_user_id__username }}{{ i.zakaz_time.day }}{{ i.zakaz_time.hour }}{{ i.zakaz_time.minute }}"class="collapse">
+                                <td>Имя - {{ o.zakaz_goods_id.NameGoods }}</td>
+                                <td>Цена - {{ o.zakaz_goods_id.Price }}</td>
+                                <td>Хуйня - {{ o.zakaz_goods_id.GoodsStock }}</td>
+                                <td>Тип - {{ o.zakaz_goods_id.GoodsType }}</td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
 
-        </table>
-    {% endfor %}
+                </table>
+        {% endfor %}
     </div>
 
-    </div>
+
 {% endblock %}
