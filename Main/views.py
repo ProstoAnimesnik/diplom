@@ -7,7 +7,7 @@ from django.shortcuts import redirect , render
 from django.template.smartif import key
 from django.urls import reverse_lazy
 from django.utils.timezone import make_aware
-from django.views.generic import CreateView, ListView, TemplateView
+from django.views.generic import CreateView, ListView, TemplateView, FormView
 from django.views.generic.base import View
 
 from Main.forms import *
@@ -59,8 +59,10 @@ class Testing(DataMixin, ListView):
         return super(Testing, self).get(request, *args, **kwargs)
 
 
-class About(DataMixin, TemplateView):
+class About(DataMixin, FormView):
     template_name = "About.html"
+    form_class = AddGoodsInZakazForm
+
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -161,7 +163,6 @@ class view_orders(DataMixin, ListView,View ):
             'zakaz_user_id__username',
             'zakaz_user_id__NumPhone',
             "zakaz_status",
-            "id"
         ).distinct()
         users_with_time_rasmortenno = Zakaz.objects.filter(zakaz_user_id__in=userss,
                                                            zakaz_status__in=["2", "3"]).values(
@@ -169,9 +170,9 @@ class view_orders(DataMixin, ListView,View ):
             'zakaz_user_id__username',
             'zakaz_user_id__NumPhone',
             "zakaz_status",
-            "id"
 
         ).distinct()
+        print("users_with_time_ne_rasmort - ", users_with_time_ne_rasmort)
         c_def = self.get_user_content(title="Добавить товар",
                                       users_ne_rasmortenno=users_with_time_ne_rasmort,
                                       users_rasmortenno=users_with_time_rasmortenno
@@ -184,34 +185,36 @@ class view_orders(DataMixin, ListView,View ):
     def post(self, request):
         if request.method == 'POST':
             if request.POST.get("submit"):
-                print("submit")
-                kek = request.POST.get('submit').split("_")
-                print(kek[0])
-                print(kek[1])
-                kek_1 = Zakaz.objects.filter(zakaz_time=kek[0])
-                print(kek_1)
+                request_content = request.POST.get('submit').split("_")
+                filter_content = Zakaz.objects.filter(zakaz_time=request_content[0], zakaz_user_id__username=request_content[1])
+                for i in filter_content:
+                    i.zakaz_status = "3"
+                    i.save()
+
             elif request.POST.get("decline"):
-                kek = request.POST.get('decline').split("_")
-                print(kek)
-                print(kek[0])
-                print(kek[1])
-                print(kek[2])
-                print(type(kek[0]))
-                kek_1=Zakaz.objects.filter(zakaz_status="1")
-                print(kek_1)
-                print(kek_1[0])
-                print(kek_1[0].zakaz_time)
-                print(type(kek_1[0].zakaz_time))
-            # if key.startswith('submit_'):
-            #     btn_pk = key[7:].split("_")
-            #     print("submit")
-            #     print(Zakaz.objects.filter(zakaz_time=datetime.datetime.strptime(btn_pk[0], "%Y-%m-%d %H:%M")))
-            #
-            #     # zayavka_id = Zakaz.objects.get(id=btn_pk)
-            # elif key.startswith('decline_'):
-            #     btn_pk = key[8:].split("_")
-            #     print("decline")
-            #     # print(Zakaz.objects.filter(zakaz_time=datetime.datetime.strptime(btn_pk[0], "%Y-%m-%d %H:%M")))
+                request_content = request.POST.get('decline').split("_")
+                filter_content = Zakaz.objects.filter(zakaz_time=request_content[0], zakaz_user_id__username=request_content[1])
+                for i in filter_content:
+                    i.zakaz_status = "2"
+                    i.save()
+
+            elif request.POST.get("delete"):
+                request_content = request.POST.get('delete').split("_")
+                filter_content =Zakaz.objects.filter(zakaz_goods_id=request_content[0], zakaz_user_id__username=request_content[1], zakaz_time=request_content[2])
+                for i in filter_content:
+                    i.delete()
+
+            elif request.POST.get("return"):
+                request_content = request.POST.get('return').split("_")
+                filter_content = Zakaz.objects.filter(zakaz_time=request_content[0],
+                                                      zakaz_user_id__username=request_content[1])
+                for i in filter_content:
+                    i.zakaz_status = "1"
+                    i.save()
+
+
+
+
         return HttpResponseRedirect('/view_orders')
 
 

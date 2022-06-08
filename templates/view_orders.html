@@ -3,7 +3,23 @@
 {% block title %}
     {{ title }}
 {% endblock %}
+
 {% block content %}
+    <!-- Bootstrap v3.x stylesheet -->
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<!-- bootstrap widget theme - **** RENAMED TO theme.bootstrap_3.css **** -->
+<link rel="stylesheet" href="css/theme.bootstrap_3.css">
+
+<script src="js/jquery.min.js"></script>
+<script src="js/jquery.tablesorter.js"></script>
+<script src="js/jquery.tablesorter.widgets.js"></script>
+
+<!-- pager plugin -->
+<link rel="stylesheet" href="css/jquery.tablesorter.pager.css">
+<script src="js/jquery.tablesorter.pager.js"></script>
+
+
+    <form method="post" action="view_orders">
      <ul class="nav nav-pills nav-fill" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
             <a class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home"
@@ -14,10 +30,11 @@
                type="button" role="tab" aria-controls="profile" aria-selected="false">Обработанные</a>
         </li>
     </ul>
+    <div class="tab-content">
     <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-
+        <table cellspacing="5" cellpadding="10" border="1" width="100%" >
         {% for i in users_ne_rasmortenno %}
-                <table cellspacing="5" cellpadding="10" border="1" width="100%">
+
                     <tr>
 
                         <td> {{ i.zakaz_user_id__username}} </td>
@@ -25,15 +42,14 @@
                         <td>{{ i.zakaz_time }}</td>
                         <td>{{ i.zakaz_user_id__NumPhone }}</td>
                         <td>
-                            <button data-bs-toggle="collapse" data-bs-target="#boobs_{{ i.zakaz_user_id__username }}{{ i.zakaz_time.day }}{{ i.zakaz_time.hour }}{{ i.zakaz_time.minute }}">
+                            <button type="button" data-bs-toggle="collapse" data-bs-target="#boobs_{{ i.zakaz_user_id__username }}{{ i.zakaz_time.day }}{{ i.zakaz_time.hour }}{{ i.zakaz_time.minute }}">
                                 Просмотр заказа
                             </button>
                         </td>
-                        <form method="post" action="view_orders"   >
-                        <td>    <button type="submit" name="submit" value="{{ i.zakaz_time|date:"c" }}_{{ i.zakaz_user_id__username}}_submit">кнопачка одобрить</button></td>
-                        <td>    <button type="submit" name="decline" value="{{ i.zakaz_time|date:"c" }}_{{ i.zakaz_user_id__username}}_decline">кнопачка -</button></td>
-                        {% csrf_token %}
-                        </form>
+
+                        <td><button type="submit" name="submit" value="{{ i.zakaz_time|date:"c" }}_{{ i.zakaz_user_id__username}}_submit">кнопачка одобрить</button></td>
+                        <td><button type="submit" name="decline" value="{{ i.zakaz_time|date:"c" }}_{{ i.zakaz_user_id__username}}_decline">кнопачка -</button></td>
+
                     </tr>
                     {% for o in orders %}
                         {% if o.zakaz_user_id.username == i.zakaz_user_id__username and o.zakaz_time == i.zakaz_time %}
@@ -49,11 +65,12 @@
                                     {% endif %}
                                 </td>
                                 <td>Тип - {{ o.zakaz_goods_id.GoodsType }}</td>
+                                <td><button type="submit" name="delete" value="{{ o.zakaz_goods_id.id }}_{{ o.zakaz_user_id.username }}_{{ o.zakaz_time|date:"c" }}">Удалить товар</button></td>
                             </tr>
                         {% endif %}
                     {% endfor %}
-                </table>
-        {% endfor %}
+                 {% endfor %}
+       </table>
     </div>
 
     <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
@@ -64,17 +81,16 @@
                         <td>{{ i.zakaz_time }}</td>
                         <td>{{ i.zakaz_user_id__NumPhone }}</td>
                     {% if i.zakaz_status == "2" %}
-                        <td> Рассмотренна </td>
+                        <td>Статус : Отклонено </td>
                     {% elif i.zakaz_status == "3" %}
-                        <td> Отказано </td>
+                        <td>Статус : Одобренно </td>
                     {% endif %}
                         <td>
-                            <button data-bs-toggle="collapse" data-bs-target="#boobs_{{ i.zakaz_user_id__username }}{{ i.zakaz_time.day }}{{ i.zakaz_time.hour }}{{ i.zakaz_time.minute }}">
-                                Collapsible
+                            <button type="button" data-bs-toggle="collapse" data-bs-target="#boobs_{{ i.zakaz_user_id__username }}{{ i.zakaz_time.day }}{{ i.zakaz_time.hour }}{{ i.zakaz_time.minute }}">
+                                Просмотр заказа
                             </button>
                         </td>
-                        <td>Кнопачка для одобрения</td>
-                        <td>Кнопачка для отклонения</td>
+                        <td><button type="submit" name="return" value="{{ i.zakaz_time|date:"c" }}_{{ i.zakaz_user_id__username}}_return">Вернуть заказ</button></td>
                     </tr>
                     {% for o in orders %}
                         {% if o.zakaz_user_id.username == i.zakaz_user_id__username and o.zakaz_time == i.zakaz_time %}
@@ -85,11 +101,99 @@
                                 <td>Тип - {{ o.zakaz_goods_id.GoodsType }}</td>
                             </tr>
                         {% endif %}
-                    {% endfor %}
 
+                    {% endfor %}
+                            <tr><a id="login_modal" class="btn btn-outline-light me-2" type="button" name="button">Логин</a></tr>
                 </table>
         {% endfor %}
     </div>
 
-
+    </div>
+    {% csrf_token %}
+    </form>
 {% endblock %}
+{% comment %}
+{% block script %}
+$(function() {
+
+  // NOTE: $.tablesorter.themes.bootstrap is ALREADY INCLUDED in the jquery.tablesorter.widgets.js
+  // file; it is included here to show how you can modify the default classes
+  $.tablesorter.themes.bootstrap = {
+    // these classes are added to the table. To see other table classes available,
+    // look here: http://getbootstrap.com/css/#tables
+    table        : 'table table-bordered table-striped',
+    caption      : 'caption',
+    // header class names
+    header       : 'bootstrap-header', // give the header a gradient background (theme.bootstrap_2.css)
+    sortNone     : '',
+    sortAsc      : '',
+    sortDesc     : '',
+    active       : '', // applied when column is sorted
+    hover        : '', // custom css required - a defined bootstrap style may not override other classes
+    // icon class names
+    icons        : '', // add "bootstrap-icon-white" to make them white; this icon class is added to the  in the header
+    iconSortNone : 'bootstrap-icon-unsorted', // class name added to icon when column is not sorted
+    iconSortAsc  : 'glyphicon glyphicon-chevron-up', // class name added to icon when column has ascending sort
+    iconSortDesc : 'glyphicon glyphicon-chevron-down', // class name added to icon when column has descending sort
+    filterRow    : '', // filter row class; use widgetOptions.filter_cssFilter for the input/select element
+    footerRow    : '',
+    footerCells  : '',
+    even         : '', // even row zebra striping
+    odd          : ''  // odd row zebra striping
+  };
+
+  // call the tablesorter plugin and apply the uitheme widget
+  $("table").tablesorter({
+    // this will apply the bootstrap theme if "uitheme" widget is included
+    // the widgetOptions.uitheme is no longer required to be set
+    theme : "bootstrap",
+
+    widthFixed: true,
+
+    headerTemplate : '{content} {icon}', // new in v2.7. Needed to add the bootstrap icon!
+
+    // widget code contained in the jquery.tablesorter.widgets.js file
+    // use the zebra stripe widget if you plan on hiding any rows (filter widget)
+    widgets : [ "uitheme", "filter", "columns", "zebra" ],
+
+    widgetOptions : {
+      // using the default zebra striping class name, so it actually isn't included in the theme variable above
+      // this is ONLY needed for bootstrap theming if you are using the filter widget, because rows are hidden
+      zebra : ["even", "odd"],
+
+      // class names added to columns when sorted
+      columns: [ "primary", "secondary", "tertiary" ],
+
+      // reset filters button
+      filter_reset : ".reset",
+
+      // extra css class name (string or array) added to the filter element (input or select)
+      filter_cssFilter: "form-control",
+
+      // set the uitheme widget to use the bootstrap theme class names
+      // this is no longer required, if theme is set
+      // ,uitheme : "bootstrap"
+
+    }
+  })
+  .tablesorterPager({
+
+    // target the pager markup - see the HTML block below
+    container: $(".ts-pager"),
+
+    // target the pager page select dropdown - choose a page
+    cssGoto  : ".pagenum",
+
+    // remove rows from the table to speed up the sort of large tables.
+    // setting this to false, only hides the non-visible rows; needed if you plan to add/remove rows with the pager enabled.
+    removeRows: false,
+
+    // output string - default is '{page}/{totalPages}';
+    // possible variables: {page}, {totalPages}, {filteredPages}, {startRow}, {endRow}, {filteredRows} and {totalRows}
+    output: '{startRow} - {endRow} / {filteredRows} ({totalRows})'
+
+  });
+
+});
+{% endblock %}
+{% endcomment %}

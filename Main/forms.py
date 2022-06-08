@@ -4,9 +4,9 @@ from bootstrap_modal_forms.mixins import PopRequestMixin, CreateUpdateAjaxMixin
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
-from django.forms import TextInput, PasswordInput, EmailInput, NumberInput, ModelForm
-
-from Main.models import UserNew, Goods
+from django.forms import TextInput, PasswordInput, EmailInput, NumberInput, ModelForm, Form
+from django.contrib.admin.widgets import FilteredSelectMultiple
+from Main.models import *
 
 
 class CreateUserForm(PopRequestMixin, CreateUpdateAjaxMixin, UserCreationForm):
@@ -43,3 +43,13 @@ class AddGoodsForm(ModelForm):
     class Meta:
         model = Goods
         fields = ("__all__")
+
+class AddGoodsInZakazForm(Form):
+    equip_id = forms.ModelMultipleChoiceField(queryset=Zakaz.objects.all(), required=True, widget=FilteredSelectMultiple("zakaz_status", is_stacked=False))
+
+class Media:
+    css = {
+        'all': ('/admin/css/widgets.css',),
+    }
+    # jsi18n is required by the widget
+    js = ('/admin/jsi18n/',)

@@ -1,5 +1,7 @@
-from django.urls import path
+from django.urls import path, re_path
 from django.contrib.auth import views as authViews
+from django.views.i18n import JavaScriptCatalog
+
 from .views import *
 
 
@@ -16,4 +18,5 @@ urlpatterns = [
     path('add_goods', add_goods.as_view(), name="add_goods"),
     path('view_orders', view_orders.as_view(), name="view_orders"),
     path('logout', logout_user, name='logout'),
+    re_path(r'^jsi18n/$', JavaScriptCatalog.as_view(), name='javascript-catalog')
 ]
