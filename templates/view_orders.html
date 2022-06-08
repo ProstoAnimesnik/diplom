@@ -46,10 +46,18 @@
                                 Просмотр заказа
                             </button>
                         </td>
+<<<<<<< HEAD
 
                         <td><button type="submit" name="submit" value="{{ i.zakaz_time|date:"c" }}_{{ i.zakaz_user_id__username}}_submit">кнопачка одобрить</button></td>
                         <td><button type="submit" name="decline" value="{{ i.zakaz_time|date:"c" }}_{{ i.zakaz_user_id__username}}_decline">кнопачка -</button></td>
 
+=======
+                        <form method="post" action="view_orders">
+                        <td>    <button type="submit" name="submit" value="{{ i.zakaz_time|date:"c" }}_{{ i.zakaz_user_id__username}}_submit">кнопачка одобрить</button></td>
+                        <td>    <button type="submit" name="decline" value="{{ i.zakaz_time|date:"c" }}_{{ i.zakaz_user_id__username}}_decline">кнопачка -</button></td>
+                        {% csrf_token %}
+                        </form>
+>>>>>>> 6e04838f466f140297cbb636bbd244a852f01193
                     </tr>
                     {% for o in orders %}
                         {% if o.zakaz_user_id.username == i.zakaz_user_id__username and o.zakaz_time == i.zakaz_time %}
@@ -81,9 +89,15 @@
                         <td>{{ i.zakaz_time }}</td>
                         <td>{{ i.zakaz_user_id__NumPhone }}</td>
                     {% if i.zakaz_status == "2" %}
+<<<<<<< HEAD
                         <td>Статус : Отклонено </td>
                     {% elif i.zakaz_status == "3" %}
                         <td>Статус : Одобренно </td>
+=======
+                        <td> Отклонено </td>
+                    {% elif i.zakaz_status == "3" %}
+                        <td> Одобренно </td>
+>>>>>>> 6e04838f466f140297cbb636bbd244a852f01193
                     {% endif %}
                         <td>
                             <button type="button" data-bs-toggle="collapse" data-bs-target="#boobs_{{ i.zakaz_user_id__username }}{{ i.zakaz_time.day }}{{ i.zakaz_time.hour }}{{ i.zakaz_time.minute }}">
@@ -107,6 +121,7 @@
                 </table>
         {% endfor %}
     </div>
+<<<<<<< HEAD
 
     </div>
     {% csrf_token %}
@@ -115,6 +130,9 @@
 {% comment %}
 {% block script %}
 $(function() {
+=======
+</div>
+>>>>>>> 6e04838f466f140297cbb636bbd244a852f01193
 
   // NOTE: $.tablesorter.themes.bootstrap is ALREADY INCLUDED in the jquery.tablesorter.widgets.js
   // file; it is included here to show how you can modify the default classes

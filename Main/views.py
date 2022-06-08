@@ -185,6 +185,7 @@ class view_orders(DataMixin, ListView,View ):
     def post(self, request):
         if request.method == 'POST':
             if request.POST.get("submit"):
+<<<<<<< HEAD
                 request_content = request.POST.get('submit').split("_")
                 filter_content = Zakaz.objects.filter(zakaz_time=request_content[0], zakaz_user_id__username=request_content[1])
                 for i in filter_content:
@@ -215,6 +216,40 @@ class view_orders(DataMixin, ListView,View ):
 
 
 
+=======
+                print("submit")
+                kek = request.POST.get('submit').split("_")
+                kek_1 = Zakaz.objects.filter(zakaz_time=kek[0])
+                print(f"kek_1 - {kek_1}")
+                for i in kek_1:
+                    print(f"i - {i}")
+                    print(f"i.status - {i.zakaz_status}")
+                    i.zakaz_status = "3"
+                    i.save()
+                    print(f"i.status2 - {i.zakaz_status}")
+
+
+            elif request.POST.get("decline"):
+                kek = request.POST.get('decline').split("_")
+                kek_1 = Zakaz.objects.filter(zakaz_time=kek[0])
+                print(f"kek_1 - {kek_1}")
+                for i in kek_1:
+                    print(f"i - {i}")
+                    print(f"i.status - {i.zakaz_status}")
+                    i.zakaz_status = "2"
+                    i.save()
+                    print(f"i.status2 - {i.zakaz_status}")
+            # if key.startswith('submit_'):
+            #     btn_pk = key[7:].split("_")
+            #     print("submit")
+            #     print(Zakaz.objects.filter(zakaz_time=datetime.datetime.strptime(btn_pk[0], "%Y-%m-%d %H:%M")))
+            #
+            #     # zayavka_id = Zakaz.objects.get(id=btn_pk)
+            # elif key.startswith('decline_'):
+            #     btn_pk = key[8:].split("_")
+            #     print("decline")
+            #     # print(Zakaz.objects.filter(zakaz_time=datetime.datetime.strptime(btn_pk[0], "%Y-%m-%d %H:%M")))
+>>>>>>> 6e04838f466f140297cbb636bbd244a852f01193
         return HttpResponseRedirect('/view_orders')
 
 
