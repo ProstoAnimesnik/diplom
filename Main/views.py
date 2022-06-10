@@ -9,11 +9,11 @@ from django.urls import reverse_lazy
 from django.utils.timezone import make_aware
 from django.views.generic import CreateView, ListView, TemplateView, FormView
 from django.views.generic.base import View
-
+from django.db.models import *
 from Main.forms import *
 from Main.models import *
 from Main.utils import DataMixin
-
+from django.utils.encoding import force_text
 
 class Index(DataMixin, TemplateView):
     template_name = "index.html"
@@ -42,14 +42,9 @@ class Testing(DataMixin, ListView):
                 cou = 0
                 for i in Cart.objects.filter(cart_user_id=request.user):
                     if tovar == i.cart_goods_id:
-                        print("I - ", tovar)
                         towa = Cart.objects.get(cart_user_id=request.user, cart_goods_id=tovar)
-                        print(type(towa.cart_user_id))
-                        print(type(towa.cart_goods_count))
-
                         towa.cart_goods_count += 1
                         towa.save()
-                        print(towa)
                         cou = 1
                 if cou == 0:
                     item_to_cart = Cart(cart_user_id=request.user, cart_goods_id=tovar,
@@ -59,15 +54,15 @@ class Testing(DataMixin, ListView):
         return super(Testing, self).get(request, *args, **kwargs)
 
 
-class About(DataMixin, FormView):
-    template_name = "About.html"
-    form_class = AddGoodsInZakazForm
-
-
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
-        c_def = self.get_user_content(title="About")
-        return dict(list(context.items()) + list(c_def.items()))
+# class About(DataMixin, FormView):
+#     template_name = "About.html"
+#     form_class = AddGoodsInZakazForm
+#
+#
+#     def get_context_data(self, *, object_list=None, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         c_def = self.get_user_content(title="About")
+#         return dict(list(context.items()) + list(c_def.items()))
 
 
 class RegisterUser(DataMixin, BSModalCreateView):
@@ -121,7 +116,7 @@ class CartView(DataMixin, ListView):
         goods = Cart.objects.filter(cart_user_id=request.user)  # список товаров в корзине у этого пользователя
         print(goods)
         for key in request.GET.keys():
-            if key.startswith('btn_'):  # делаем грязь только по нажатию кнопки
+            if key.startswith('btn_'):  # делаем только по нажатию кнопки
                 for i in goods:  # цикл по товарам пользователя
                     print("Request User - ", request.user)
                     cart_to_zakaz = Zakaz(zakaz_user_id=request.user,
@@ -158,24 +153,22 @@ class view_orders(DataMixin, ListView,View ):
         # Крч ищем, какие пользователи заказали.
         # Потом, через values() вытаскиваем только время заказа и юзернейм чела.
         # distinct() отвечает за отсутствие дубликатов
-        users_with_time_ne_rasmort = Zakaz.objects.filter(zakaz_user_id__in=userss, zakaz_status="1").values(
-            'zakaz_time',
-            'zakaz_user_id__username',
-            'zakaz_user_id__NumPhone',
-            "zakaz_status",
-        ).distinct()
-        users_with_time_rasmortenno = Zakaz.objects.filter(zakaz_user_id__in=userss,
-                                                           zakaz_status__in=["2", "3"]).values(
-            'zakaz_time',
-            'zakaz_user_id__username',
-            'zakaz_user_id__NumPhone',
-            "zakaz_status",
 
-        ).distinct()
-        print("users_with_time_ne_rasmort - ", users_with_time_ne_rasmort)
+        choices = dict(Zakaz._meta.get_field('zakaz_status').flatchoices)
+        whens = [When(zakaz_status=k, then=Value(v)) for k, v in choices.items()]
+        users_with_time = (
+            Zakaz.objects.filter(zakaz_user_id__in=userss)
+                .annotate(get_zakaz_status_display=Case(*whens, output_field=CharField()))
+                .values(
+                'zakaz_time',
+                'zakaz_user_id__username',
+                'zakaz_user_id__NumPhone',
+                "zakaz_status",
+                "get_zakaz_status_display"
+            ).distinct()
+        )
         c_def = self.get_user_content(title="Добавить товар",
-                                      users_ne_rasmortenno=users_with_time_ne_rasmort,
-                                      users_rasmortenno=users_with_time_rasmortenno
+                                      users_zakaz=users_with_time,
                                       )
         return dict(list(context.items()) + list(c_def.items()))
 
@@ -185,7 +178,6 @@ class view_orders(DataMixin, ListView,View ):
     def post(self, request):
         if request.method == 'POST':
             if request.POST.get("submit"):
-<<<<<<< HEAD
                 request_content = request.POST.get('submit').split("_")
                 filter_content = Zakaz.objects.filter(zakaz_time=request_content[0], zakaz_user_id__username=request_content[1])
                 for i in filter_content:
@@ -212,44 +204,6 @@ class view_orders(DataMixin, ListView,View ):
                 for i in filter_content:
                     i.zakaz_status = "1"
                     i.save()
-
-
-
-
-=======
-                print("submit")
-                kek = request.POST.get('submit').split("_")
-                kek_1 = Zakaz.objects.filter(zakaz_time=kek[0])
-                print(f"kek_1 - {kek_1}")
-                for i in kek_1:
-                    print(f"i - {i}")
-                    print(f"i.status - {i.zakaz_status}")
-                    i.zakaz_status = "3"
-                    i.save()
-                    print(f"i.status2 - {i.zakaz_status}")
-
-
-            elif request.POST.get("decline"):
-                kek = request.POST.get('decline').split("_")
-                kek_1 = Zakaz.objects.filter(zakaz_time=kek[0])
-                print(f"kek_1 - {kek_1}")
-                for i in kek_1:
-                    print(f"i - {i}")
-                    print(f"i.status - {i.zakaz_status}")
-                    i.zakaz_status = "2"
-                    i.save()
-                    print(f"i.status2 - {i.zakaz_status}")
-            # if key.startswith('submit_'):
-            #     btn_pk = key[7:].split("_")
-            #     print("submit")
-            #     print(Zakaz.objects.filter(zakaz_time=datetime.datetime.strptime(btn_pk[0], "%Y-%m-%d %H:%M")))
-            #
-            #     # zayavka_id = Zakaz.objects.get(id=btn_pk)
-            # elif key.startswith('decline_'):
-            #     btn_pk = key[8:].split("_")
-            #     print("decline")
-            #     # print(Zakaz.objects.filter(zakaz_time=datetime.datetime.strptime(btn_pk[0], "%Y-%m-%d %H:%M")))
->>>>>>> 6e04838f466f140297cbb636bbd244a852f01193
         return HttpResponseRedirect('/view_orders')
 
 

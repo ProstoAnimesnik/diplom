@@ -3,16 +3,22 @@
 {% block title %}
     {{ title }}
 {% endblock %}
+{% block css %}
+    <style>
+    .button{
+   text-align: center;
+        }
+    </style>
+{% endblock %}
 {% block content %}
 
     <form method="get" enctype="multipart/form-data">
-    <button type="submit" name="btn_buy" class="btn btn-success">Купить все</button>
+
 
         <div class="container" id="aboba">
             <table class="table">
                 <thead class="thead-dark">
                 <tr>
-                    <th class="text-center" scope="col">#</th>
                     <th class="text-center" scope="col">Название товара</th>
                     <th class="text-center" scope="col">Кол-во</th>
                     <th class="text-center" scope="col">Цена за ед.Товара</th>
@@ -22,7 +28,6 @@
                 {% for i in user_cart %}
                     <tbody>
                     <tr>
-                        <th name="goods" class="text-center" scope="row">{{ forloop.counter }}</th>
                         <td class="text-center">{{ i.cart_goods_id.NameGoods }}</td>
                         <td class="text-center">{{ i.cart_goods_count }}</td>
                         <td class="text-center">{{ i.cart_goods_id.Price }}</td>
@@ -31,8 +36,10 @@
 
                     </tbody>
                 {% endfor %}
+
             </table>
         </div>
+        <center><button type="submit" name="btn_buy" class="btn btn-success">Купить все</button></center>
     </form>
 {% endblock %}
 

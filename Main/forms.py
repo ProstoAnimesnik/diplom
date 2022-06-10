@@ -42,7 +42,14 @@ class LoginUserForm(AuthenticationForm):
 class AddGoodsForm(ModelForm):
     class Meta:
         model = Goods
-        fields = ("__all__")
+        fields = ("NameGoods","Price","GoodsStock","GoodsPhoto","GoodsType")
+ #        widgets = {
+ #              "NameGoods": forms.CharField(attrs={'placeholder': 'Имя товара'}),
+ #              "Price": forms.DecimalField(attrs={'placeholder': 'Цена товара'}),
+ #              "GoodsStock": forms.DecimalField(attrs={'placeholder': 'Кол-во товара'}),
+ #              "GoodsPhoto": forms.ImageField(attrs={'placeholder': 'Изображение товара'}),
+ #              "GoodsType": forms.CharField(max_length=300, choices=Goods, attrs={'placeholder': 'Изображение товара'}),
+ # }
 
 class AddGoodsInZakazForm(Form):
     equip_id = forms.ModelMultipleChoiceField(queryset=Zakaz.objects.all(), required=True, widget=FilteredSelectMultiple("zakaz_status", is_stacked=False))
