@@ -1,8 +1,174 @@
 {% extends 'base.html' %}
+
 {% block title %}
     {{ title }}
 {% endblock %}
+
+{% block css %}
+    <link type="text/css"
+          href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/css/theme.bootstrap_4.min.css"
+          rel="stylesheet"/>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/css/jquery.tablesorter.pager.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/css/theme.bootstrap_4.min.css">
+    <link type="text/css" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.9/dist/sweetalert2.css" rel="stylesheet"/>
+
+    <style>
+        .tablesorter-pager .btn-group-sm .btn {
+            font-size: 1.2em; /* make pager arrows more visible */
+        }
+
+        .booba {
+            padding: 2%;
+        }
+
+        .paddi {
+            padding: 15px;
+        }
+
+        .table .thead-dark th {
+            color: #fff;
+            background-color: #343a40;
+            border-color: #454d55;
+        }
+
+        .bootstrap_buttons button {
+            margin: 0 0 0 2%;
+        }
+
+        .hid_btn {
+            visibility: hidden;
+            font-size: 0;
+        }
+    </style>
+{% endblock %}
 {% block content %}
-    <i class="fa fa-check"></i>
+
+
+    <form method="get" enctype="multipart/form-data">
+        <div class="paddi"></div>
+
+        <div class="booba" id="aboba">
+            <table id="books-table" class="table table-bordered">
+                <thead class="thead-dark">
+                <tr>
+                    <th class="text-center" scope="col">№</th>
+                    <th class="text-center" scope="col">ID</th>
+                    <th class="text-center" scope="col">Номер лаборатории</th>
+                    <th class="text-center" scope="col">Время</th>
+                    <th class="text-center" scope="col">ПО</th>
+                    <th class="text-center" scope="col">Оборудование</th>
+                    <th class="text-center" scope="col">Редактировать</th>
+
+                </tr>
+                </thead>
+
+                <tfoot>
+                <tr>
+                    <th>№</th>
+                    <th>ID</th>
+                    <th>Номер лаборатории</th>
+                    <th class="text-center">Время</th>
+                    <th class="text-center">ПО</th>
+                    <th class="text-center">Оборудование</th>
+                    <th>Редактировать</th>
+                </tr>
+                <tr>
+                    <th colspan="9" class="ts-pager">
+                        <div class="form-inline">
+                            <div class="btn-group btn-group-sm mx-1" role="group">
+                                <button type="button" class="btn btn-secondary first" title="В начало">⇤
+                                </button>
+                                <button type="button" class="btn btn-secondary prev" title="Прошлая страница">←
+                                </button>
+                            </div>
+                            <span class="pagedisplay"></span>
+                            <div class="btn-group btn-group-sm mx-1" role="group">
+                                <button type="button" class="btn btn-secondary next" title="Следующая страница">
+                                    →
+                                </button>
+                                <button type="button" class="btn btn-secondary last" title="В конец">⇥</button>
+                            </div>
+                            <select class="form-control-sm custom-select px-1 pagesize" title="Кол-во записей">
+                                <option selected="selected" value="10">10</option>
+                                <option value="20">20</option>
+                                <option value="30">30</option>
+                                <option value="all">Все</option>
+                            </select>
+                            <select class="form-control-sm custom-select px-4 mx-1 pagenum"
+                                    title="Номер страницы"></select>
+                        </div>
+                    </th>
+                </tr>
+                </tfoot>
+
+                <tbody>
+
+                {% for i in Cab %}
+
+                    <tr class="table-light">
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <th>1</th>
+                        <th>2</th>
+                        <th class="text-center">3</th>
+                        <th class="text-center">4</th>
+                        <th class="text-center">5</th>
+
+                    </tr>
+
+                {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+    </form>
+
 {% endblock %}
 
+{% block scripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/jquery.tablesorter.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/jquery.tablesorter.widgets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/extras/jquery.tablesorter.pager.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.9"></script>
+
+
+    <script type="text/javascript">
+        $(function () {
+
+
+            $("table").tablesorter({
+                theme: "bootstrap",
+                widthFixed: true,
+                widgets: ["filter",],
+
+                widgetOptions: {
+
+                    columns: ["primary", "secondary", "tertiary"],
+                    {#filter_reset: ".reset",#}
+                    filter_cssFilter: [
+                        'form-control',
+                        'form-control',
+                        'form-control',
+                        'form-control',
+                        'form-control',
+                        'form-control',
+                        'form-control custom-select', // select needs custom class names :(
+                        'form-control',
+                        'form-control'
+                    ]
+                }
+            })
+                .tablesorterPager({
+                    container: $(".ts-pager"),
+                    cssGoto: ".pagenum",
+                    removeRows: false,
+                    output: '{startRow} - {endRow} / {filteredRows} ({totalRows})'
+
+                });
+
+        });
+
+    </script>
+
+{% endblock %}

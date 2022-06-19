@@ -15,13 +15,17 @@ from Main.models import *
 from Main.utils import DataMixin
 from django.utils.encoding import force_text
 
-class Index(DataMixin, TemplateView):
+class Index(DataMixin, ListView):
     template_name = "index.html"
+    queryset = Goods.objects.all()
+    context_object_name = "Cab"
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         c_def = self.get_user_content(title="Главная!")
         return dict(list(context.items()) + list(c_def.items()))
+
+
 
 
 class Testing(DataMixin, ListView):
@@ -34,7 +38,18 @@ class Testing(DataMixin, ListView):
         c_def = self.get_user_content(title="Товары")
         return dict(list(context.items()) + list(c_def.items()))
 
+
+class SearchAllLessonAPI(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = '_modal_Shop.html'
+
     def get(self, request, *args, **kwargs):
+        query = self.request.GET.get('gg')  ## запрос строки
+
+        if query:
+            less = Goods.objects.all()
+            return Response({'lesson': less})
+
         for key in request.GET.keys():
             if key.startswith('btn_'):
                 btn_pk = key[4:]
@@ -50,8 +65,7 @@ class Testing(DataMixin, ListView):
                     item_to_cart = Cart(cart_user_id=request.user, cart_goods_id=tovar,
                                         cart_goods_count=1)  # создаем запись
                     item_to_cart.save()  # добавляем
-
-        return super(Testing, self).get(request, *args, **kwargs)
+        return HttpResponseRedirect('/test_1')
 
 
 # class About(DataMixin, FormView):
@@ -142,7 +156,7 @@ class add_goods(DataMixin, CreateView):
         c_def = self.get_user_content(title="Добавить товар")
         return dict(list(context.items()) + list(c_def.items()))
 
-class view_orders(DataMixin, ListView,View ):
+class view_orders(DataMixin, ListView ):
     template_name = "view_orders.html"
     context_object_name = "orders"
 

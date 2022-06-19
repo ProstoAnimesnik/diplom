@@ -1,0 +1,21 @@
+<form method="get" enctype="multipart/form-data">
+        <div class="container"></div>
+    <div class="d-flex flex-nowrap">
+        <div class="order-1 p-2"></div>
+        <div class="order-2 p-2">
+            <div class="card-deck">
+            <div class="row row-cols-md-4 ">
+                {% for i in goods_t %}
+                <div class="card">
+                <img class="card-img-top" src="{{ i.GoodsPhoto.url }}" alt="Card image cap">
+                    <div class="card-body">
+                    <h5 class="card-title">{{ i.NameGoods }}</h5>
+                    <p class="card-text">{{ i.Price }} Рублей</p>
+                    <button name="btn_{{ i.pk }}" type="submit" class="btn btn-success">Положить в корзину</button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            </div>
+        </div>
+    </div>

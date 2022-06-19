@@ -1,60 +1,57 @@
 {% extends 'base.html' %}
+{% load static %}
+
 {% block title %}
     {{ title }}
 {% endblock %}
 {% block css %}
+    <link type="text/css" href="{% static 'css/search.css' %}" rel="stylesheet"/>
+
     <style>
 
-    .card-img-top {
-    width: 100%;
-    height: 15vw;
-    object-fit:  scale-down;
-    }
+        .card-img-top {
+            width: 100%;
+            height: 15vw;
+            object-fit: scale-down;
+        }
     </style>
 {% endblock %}
 
 {% block content %}
 
-    <form method="get" enctype="multipart/form-data">
-        <div class="container"></div>
-    <div class="d-flex flex-nowrap">
-        <div class="order-1 p-2"></div>
-        <div class="order-2 p-2">
-            <div class="card-deck">
-            <div class="row row-cols-md-4 ">
-                {% for i in goods_t %}
-                <div class="card">
-                <img class="card-img-top" src="{{ i.GoodsPhoto.url }}" alt="Card image cap">
-                    <div class="card-body">
-                    <h5 class="card-title">{{ i.NameGoods }}</h5>
-                    <p class="card-text">{{ i.Price }} Рублей</p>
-                    <button name="btn_{{ i.pk }}" type="submit" class="btn btn-success">Положить в корзину</button>
+
+    <form method="get">
+        <div class="container">
+            <div class="row height d-flex justify-content-center align-items-center">
+                <div class="col-md-6">
+                    <div class="form">
+                        <i class="fa fa-search"></i>
+                        <input id="search" name="q" type="text" class="form-control form-input"
+                               placeholder="Введите название групп">
                     </div>
                 </div>
-                {% endfor %}
-            </div>
+
             </div>
         </div>
-    </div>
-        {% comment %}    <div class="row row-cols-md-3 g-1">
-                {% for i in goods_t %}
-                        <div class="card-columns col-md-3">
-                            <div class="card mx-sm-1 p-3 text-center">
-                                <img class="card-img-top text-center" src="{{ i.GoodsPhoto.url }}" alt='нету'/>
-                                <div class="card-body">
-                                    <h7 class="card-title">{{ i.NameGoods }}</h7>
-                                    <p class="card-text">{{ i.Price }} Рублей</p>
-                                </div>
-                                <div class="card-footer">
-                                    <button name="btn_{{ i.pk }}" type="submit" class="btn btn-success">Положить в корзину
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                {% endfor %}
-            </div>
-        </div>{% endcomment %}
-
     </form>
+
+    {% include "_modal_Shop.html" %}
+
+    {#  юрл текущей страницы для js файла  #}
+    <input type="hidden" id="url_this_page" data-url="{% url 'search_all_group' %}"/>
+
+
+    {#  csrf_token для js файла  #}
+    <input type="hidden" id="csrf_token" data="{{ csrf_token }}"/>
+
+
+
+{% endblock %}
+{% block scripts %}
+    <!-- Moment -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment-with-locales.min.js"></script>
+    {# подключение js файла для живого поиска и алертами #}
+    <script src="{% static 'js/list_all_ajax.js' %}"></script>
+
 {% endblock %}
 

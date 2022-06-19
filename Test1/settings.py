@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'widget_tweaks',
     "mathfilters",
     'crispy_forms',
+    'rest_framework',
+
 ]
 
 MIDDLEWARE = [
