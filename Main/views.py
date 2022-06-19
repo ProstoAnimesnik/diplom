@@ -158,7 +158,7 @@ class view_orders(DataMixin, ListView,View ):
         whens = [When(zakaz_status=k, then=Value(v)) for k, v in choices.items()]
         users_with_time = (
             Zakaz.objects.filter(zakaz_user_id__in=userss)
-                .annotate(get_zakaz_status_display=Case(*whens, output_field=CharField()))
+                .annotate(get_zakaz_status_display=Case(*whens, output_field=CharField())).order_by('zakaz_status')
                 .values(
                 'zakaz_time',
                 'zakaz_user_id__username',

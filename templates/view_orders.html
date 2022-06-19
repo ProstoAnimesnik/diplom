@@ -12,23 +12,64 @@
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/css/theme.bootstrap_4.min.css">
     <link type="text/css" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.9/dist/sweetalert2.css" rel="stylesheet"/>
+
+
+    <style>
+        .tablesorter-pager .btn-group-sm .btn {
+            font-size: 1.2em; /* make pager arrows more visible */
+        }
+
+        .booba {
+            padding: 2%;
+        }
+
+        .paddi {
+            padding: 15px;
+        }
+
+        .table .thead-dark th {
+            color: #fff;
+            background-color: #343a40;
+            border-color: #454d55;
+        }
+
+        .bootstrap_buttons button {
+            margin: 0 0 0 2%;
+        }
+
+        .hid_btn {
+            visibility: hidden;
+            font-size: 0;
+        }
+    </style>
 {% endblock %}
 {% block content %}
 
 
 
-    <form method="post" action="view_orders">
-        <table cellspacing="5" cellpadding="10" border="1" width="100%" id="books-table" class="table table-bordered">
+    <form method="post" enctype="multipart/form-data" action="view_orders">
+
+    <div class="booba" id="aboba">
+        <table id="books-table" class="table table-bordered">
             <thead class="thead-dark">
             <tr>
-              <th>Имя пользователя</th>
-              <th>Номер телефона</th>
-              <th class="filter-select filter-exact" data-placeholder="">Статус заказа</th>
-              <th>Дата заказа</th>
+              <th class="text-center" scope="col">Имя пользователя</th>
+              <th class="text-center" scope="col">Номер телефона</th>
+              <th data-placeholder="">Статус заказа</th>
+              <th class="text-center" scope="col">Дата заказа</th>
+              <th class="text-center" scope="col">Обработка</th>
             </tr>
             </thead>
 
             <tfoot>
+            <tr>
+                <th>Имя пользователя</th>
+                <th>Номер телефона</th>
+                <th class="filter-select filter-exact" data-placeholder="На расмотрении">Статус заказа</th>
+                <th>Дата заказа</th>
+                <th>Обработка</th>
+
+            </tr>
             <tr>
                 <th colspan="9" class="ts-pager">
                     <div class="form-inline">
@@ -77,6 +118,9 @@
                         Просмотр заказа
                     </button>
                 </td>
+
+
+
             </tr>
 
             {% for o in orders %}
@@ -86,7 +130,8 @@
                         <td>Кол-во - {{ o.zakaz_goods_count }}</td>
                         <td>Цена - {{ o.zakaz_goods_id.Price }}</td>
                         <td>Цена общая - {{ o.zakaz_goods_count|mul:o.zakaz_goods_id.Price }} </td>
-                        <td>{% if o.zakaz_goods_count <= o.zakaz_goods_id.GoodsStock  %}
+                        <td>
+                            {% if o.zakaz_goods_count <= o.zakaz_goods_id.GoodsStock  %}
                             <i class="fa fa-check"></i>
                             {% else %}
                             <i class="fa fa-xmark"></i>
@@ -102,25 +147,32 @@
 
        </table>
     {% csrf_token %}
+    </div>
     </form>
 {% endblock %}
-{% block script %}
+{% block scripts %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/jquery.tablesorter.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/jquery.tablesorter.widgets.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.3/js/extras/jquery.tablesorter.pager.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.9"></script>
+
+
     <script type="text/javascript">
-        $(function () {
-
-
-
-            $("table").tablesorter({
+         $(function () {
+            $("#books-table").tablesorter({
                 theme: "bootstrap",
                 widthFixed: true,
                 widgets: ["filter",],
 
                 widgetOptions: {
+                    filter_functions : {
+                      2 : {
+                          "Отклонено" : function(e, f,  $r, c, data) { return /^[Отклонено]/.test(e); },
+                          "Одобренно" : function(e,  f,  $r, c, data) { return /^[обренно]/.test(e); },
+                          "На расмотрении" : function(e, f,  $r, c, data) { return /^[На расмотрении]/.test(e); },
 
+                        },
+                    },
                     columns: ["primary", "secondary", "tertiary"],
                     {#filter_reset: ".reset",#}
                     filter_cssFilter: [
@@ -143,8 +195,6 @@
                     output: '{startRow} - {endRow} / {filteredRows} ({totalRows})'
 
                 });
-
-
 
         });
 

@@ -40,16 +40,16 @@ class LoginUserForm(AuthenticationForm):
         attrs={'class': 'form-control', 'placeholder': 'Пароль', 'type': 'password'}))
 
 class AddGoodsForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(AddGoodsForm, self).__init__(*args, **kwargs)
+        self.fields['NameGoods'].label = "Название товара"
+        self.fields['Price'].label = "Цена"
+        self.fields['GoodsStock'].label = "Кол-во на складе"
+        self.fields['GoodsPhoto'].label = "Фотография"
+        self.fields['GoodsType'].label = "Тип товара"
     class Meta:
         model = Goods
         fields = ("NameGoods","Price","GoodsStock","GoodsPhoto","GoodsType")
- #        widgets = {
- #              "NameGoods": forms.CharField(attrs={'placeholder': 'Имя товара'}),
- #              "Price": forms.DecimalField(attrs={'placeholder': 'Цена товара'}),
- #              "GoodsStock": forms.DecimalField(attrs={'placeholder': 'Кол-во товара'}),
- #              "GoodsPhoto": forms.ImageField(attrs={'placeholder': 'Изображение товара'}),
- #              "GoodsType": forms.CharField(max_length=300, choices=Goods, attrs={'placeholder': 'Изображение товара'}),
- # }
 
 class AddGoodsInZakazForm(Form):
     equip_id = forms.ModelMultipleChoiceField(queryset=Zakaz.objects.all(), required=True, widget=FilteredSelectMultiple("zakaz_status", is_stacked=False))
